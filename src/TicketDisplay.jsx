@@ -48,7 +48,7 @@ const TicketDisplay = () => {
       <div className="display-ticket">
         <div className="header">
           <h2>Ready</h2>
-          <p className="step-indicator">Step 1/3</p>
+          <p className="step-indicator">Step 3/3</p>
         </div>
         <hr className="step-percent" />
         <div className="ticket-header">
