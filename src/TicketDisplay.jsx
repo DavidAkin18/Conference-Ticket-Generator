@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
+import "./TicketDisplay.css"; // Import the CSS file
 
 const TicketDisplay = () => {
   const [ticket, setTicket] = useState(null);
@@ -8,7 +9,14 @@ const TicketDisplay = () => {
 
   useEffect(() => {
     const savedTicket = JSON.parse(localStorage.getItem("ticketData"));
-    setTicket(savedTicket);
+    const savedFormData = JSON.parse(localStorage.getItem("formData"));
+
+    if (savedTicket && savedFormData) {
+      setTicket({
+        ...savedTicket,
+        ...savedFormData,
+      });
+    }
   }, []);
 
   const downloadTicket = async () => {
@@ -25,44 +33,90 @@ const TicketDisplay = () => {
     });
   };
 
-  return (
-    <div className="flex flex-col items-center p-6 min-h-screen bg-gray-900 text-white">
-      {ticket && (
-        <div ref={ticketRef} className="relative p-6 bg-gray-800 rounded-3xl border border-teal-400 shadow-lg w-[350px] text-center">
-          <h2 className="text-xl font-bold text-teal-300">HNG Fest "12</h2>
-          <p className="text-gray-400 text-sm mt-1">📍 Abuja, Ikorodu road, Lagos</p>
-          <p className="text-gray-400 text-sm">📅 Feb 15, 2025 | 1:00 PM</p>
+  if (!ticket) {
+    return (
+      <div className="container">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
-          {/* User Avatar */}
-          {ticket.avatarUrl && (
-            <div className="flex justify-center mt-4">
-              <img
-                src={ticket.avatarUrl || ticket.avatarFile}
-                alt="User Avatar"
-                className="w-24 h-24 rounded-lg border-2 border-teal-300"
-              />
+  const { fullName, email, avatarBase64, ticketType, ticketCount, ticketAccess, ticketPrice, specialRequest } = ticket;
+
+  return (
+    <div className="container">
+      <div className="display-ticket">
+        <div className="header">
+          <h2>Ready</h2>
+          <p className="step-indicator">Step 1/3</p>
+        </div>
+        <hr className="step-percent" />
+        <div className="ticket-header">
+          <h2>Your Ticket is Booked!</h2>
+          <p>Check your email for a copy or you can download</p>
+        </div>
+
+        <div className="ticket-card" ref={ticketRef}>
+          <h2 className="event-name">Techember Fest '25</h2>
+          <p className="event-location">📍 04 Rumens road, Ikoyi, Lagos</p>
+          <p className="event-date">📅 March 15, 2025 | 7:00 PM</p>
+
+          {avatarBase64 && (
+            <div className="avatar-section">
+              <img src={avatarBase64} alt="User Avatar" className="avatar-image" />
             </div>
           )}
 
-          
-          <div className="mt-4 bg-gray-700 p-4 rounded-lg text-left text-sm space-y-2">
-            <p className="text-white font-semibold">🎟 Name: <span className="text-gray-300">{ticket.fullName}</span></p>
-            <p className="text-white font-semibold">📧 Email: <span className="text-gray-300">{ticket.email}</span></p>
-            <p className="text-white font-semibold">🎫 Ticket Type: <span className="text-gray-300">{ticket.ticketType}</span></p>
-            <p className="text-white font-semibold">#️⃣ Quantity: <span className="text-gray-300">{ticket.ticketAmount}</span></p>
+          <div className="ticket-details">
+            <div className="ticket-dill">
+              <div className="tic">
+                <div className="ticc tic-1">
+                  <div className="ticket-info tic-1-1">
+                    <h4>Enter your name</h4>
+                    <p className="answer">{fullName}</p>
+                  </div>
+
+                  <div className="ticket-info">
+                    <h4>Enter your email *</h4>
+                    <p className="answer">{email}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="tic">
+                <div className="ticc tic-2">
+                  <div className="ticket-info">
+                    <h4>Ticket type:</h4>
+                    <p className="answer">{ticketAccess}</p>
+                  </div>
+                  <div className="ticket-info">
+                    <h4>Ticket for:</h4>
+                    <p className="answer">{ticketCount}</p>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+            <div>
+              <h4>Special Request?</h4>
+              <p>{specialRequest || "None"}</p>
+            </div>
           </div>
-
-         
+          <div className="barcode">
+            <img src="https://res.cloudinary.com/def9quyti/image/upload/v1739803940/Bar_Code_in6v8u.png" 
+             alt="barcode" />
+          </div>
         </div>
-      )}
 
-      {ticket && (
-        <button 
-          onClick={downloadTicket} 
-          className="mt-6 bg-teal-500 px-6 py-2 rounded-lg font-semibold hover:bg-teal-600 transition">
-          Download Ticket as Image
-        </button>
-      )}
+        <div className="buttons">
+          <button className="book-another" onClick={() => window.location.href = '/'}>
+            Book Another Ticket
+          </button>
+          <button className="download-ticket" onClick={downloadTicket}>
+            Download Ticket as Image
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
